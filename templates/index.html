@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptocurrency Wallet Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Cryptocurrency Wallet Tracker</h1>
+        <p>Track the activity of a cryptocurrency wallet address and check if it's interacting with any known exchanges.</p>
+
+        <form method="POST">
+            <label for="wallet_address">Enter Wallet Address:</label>
+            <input type="text" id="wallet_address" name="wallet_address" required>
+            <button type="submit">Scan</button>
+        </form>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        {% if wallet_address %}
+            <h3>Transaction History for Wallet: {{ wallet_address }}</h3>
+            <h4>Blockchain: {{ blockchain }}</h4>
+            <p>Showing transactions from the past 7 days.</p>
+            
+            {% if transactions %}
+                <h4>Transactions:</h4>
+                <ul>
+                    {% for tx in transactions %}
+                        <li>
+                            <strong>From:</strong> {{ tx['from'] }} <br>
+                            <strong>To:</strong> {{ tx['to'] }} <br>
+                            <strong>Amount:</strong> {{ tx['value'] }} <br>
+                            {% if tx['to'] in exchanges %}
+                                <strong>Interaction with a known exchange!</strong>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% if exchanges %}
+                    <h4>Exchanges Interacted With:</h4>
+                    <ul>
+                        {% for exchange in exchanges %}
+                            <li>{{ exchange }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% else %}
+                <p>No transactions found from the last 7 days for this wallet address.</p>
+            {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>
